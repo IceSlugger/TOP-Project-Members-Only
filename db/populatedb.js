@@ -1,12 +1,10 @@
+#! /usr/bin/env node
 require("dotenv").config();
 const { Client } = require("pg");
-const bcrypt = require("bcryptjs");
 
+// SQL script to create tables and seed initial data
 const SQL = `
-DROP TABLE IF EXISTS messages;
-DROP TABLE IF EXISTS users;
-
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   first_name VARCHAR(255) NOT NULL,
   last_name VARCHAR(255) NOT NULL,
@@ -16,61 +14,36 @@ CREATE TABLE users (
   is_admin BOOLEAN DEFAULT FALSE
 );
 
-CREATE TABLE messages (
+CREATE TABLE IF NOT EXISTS messages (
   id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   title VARCHAR(255) NOT NULL,
-  timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   text TEXT NOT NULL,
-  user_id INT REFERENCES users(id) ON DELETE CASCADE
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE
 );
 `;
 
 async function main() {
-  console.log("Seeding database with sample messages...");
-  const dbUrl = process.env.DATABASE_URL;
+  console.log("Seeding database...");
+  
+  const connectionString = process.env.DATABASE_URL || process.argv[2];
 
-  const clientConfig = dbUrl
-    ? { connectionString: dbUrl, ssl: { rejectUnauthorized: false } }
-    : {
-        host: process.env.DB_HOST,
-        user: process.env.DB_USER,
-        database: process.env.DB_NAME,
-        password: process.env.DB_PASSWORD,
-        port: process.env.DB_PORT,
-      };
+  if (!connectionString) {
+    console.error("Error: No connection string provided via DATABASE_URL or command argument.");
+    process.exit(1);
+  }
 
-  const client = new Client(clientConfig);
+  const isProduction = process.env.NODE_ENV === "production";
+
+  const client = new Client({
+    connectionString: connectionString,
+    ssl: isProduction ? { rejectUnauthorized: false } : false,
+  });
 
   try {
     await client.connect();
     await client.query(SQL);
-
-    const hashedPw = await bcrypt.hash("password123", 10);
-
-    // Create sample users
-    const userRes = await client.query(
-      `INSERT INTO users (first_name, last_name, username, password, membership_status, is_admin)
-       VALUES 
-       ('Alex', 'Rivers', 'alex@clubhouse.dev', $1, TRUE, TRUE),
-       ('Sarah', 'Chen', 'sarah@odin.com', $1, TRUE, FALSE),
-       ('John', 'Doe', 'john@gmail.com', $1, FALSE, FALSE)
-       RETURNING id;`,
-      [hashedPw]
-    );
-
-    const alexId = userRes.rows[0].id;
-    const sarahId = userRes.rows[1].id;
-
-    // Create sample messages
-    await client.query(
-      `INSERT INTO messages (title, text, user_id) VALUES
-       ('🚀 Welcome to the Clubhouse!', 'Hey everyone! Super excited to launch this platform. Remember: only official members can see who posted what!', $1),
-       ('Secret Passcode Reminder', 'For anyone looking to upgrade to full membership status, check out the Join Club option in the navigation menu!', $1),
-       ('JavaScript & Node.js Discussion', 'Working through the TOP curriculum has been amazing so far. Express + Passport makes auth so smooth once it clicks.', $2);`,
-      [alexId, sarahId]
-    );
-
-    console.log("Database seeded successfully with sample data!");
+    console.log("Database seeded successfully!");
   } catch (err) {
     console.error("Error seeding database:", err);
   } finally {
