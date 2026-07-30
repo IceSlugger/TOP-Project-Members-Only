@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container" style="max-width: 500px;">
+    <header class="app-header">
+      <h1>Create an Account</h1>
+      <p>Join the clubhouse to participate</p>
+    </header>
+
+    <div class="form-card">
+      <% if (errors && errors.length > 0) { %>
+        <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; padding: 14px 18px; border-radius: 10px; margin-bottom: 20px;">
+          <ul style="margin-left: 20px; font-size: 0.9rem;">
+            <% errors.forEach(error => { %>
+              <li><%= error.msg %></li>
+            <% }) %>
+          </ul>
+        </div>
+      <% } %>
+
+      <form action="/sign-up" method="POST">
+        <div class="form-group">
+          <label for="first_name">First Name</label>
+          <input type="text" id="first_name" name="first_name" value="<%= formData.first_name || '' %>" placeholder="e.g. Alex" required>
+        </div>
+
+        <div class="form-group">
+          <label for="last_name">Last Name</label>
+          <input type="text" id="last_name" name="last_name" value="<%= formData.last_name || '' %>" placeholder="e.g. Rivers" required>
+        </div>
+
+        <div class="form-group">
+          <label for="username">Email Address (Username)</label>
+          <input type="email" id="username" name="username" value="<%= formData.username || '' %>" placeholder="alex@example.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="At least 6 characters" required>
+        </div>
+
+        <div class="form-group">
+          <label for="confirm_password">Confirm Password</label>
+          <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter password" required>
+        </div>
+
+        <button type="submit" class="btn-primary" style="margin-top: 10px;">Sign Up</button>
+      </form>
+
+      <div style="text-align: center; margin-top: 20px;">
+        <span style="color: var(--text-muted); font-size: 0.9rem;">Already have an account? </span>
+        <a href="/log-in" class="btn-link">Log In</a>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 24px;">
+      <a href="/" class="btn-link">← Back to Clubhouse</a>
+    </div>
+  </div>
+</body>
+</html>

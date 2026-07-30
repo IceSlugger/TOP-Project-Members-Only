@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container" style="max-width: 460px;">
+    <header class="app-header">
+      <h1>Welcome Back</h1>
+      <p>Log in to access your clubhouse privileges</p>
+    </header>
+
+    <div class="form-card">
+      <form action="/log-in" method="POST">
+        <div class="form-group">
+          <label for="username">Email Address</label>
+          <input type="email" id="username" name="username" placeholder="alex@example.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="Enter your password" required>
+        </div>
+
+        <button type="submit" class="btn-primary" style="margin-top: 10px;">Log In</button>
+      </form>
+
+      <div style="text-align: center; margin-top: 20px;">
+        <span style="color: var(--text-muted); font-size: 0.9rem;">Don't have an account? </span>
+        <a href="/sign-up" class="btn-link">Sign Up</a>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 24px;">
+      <a href="/" class="btn-link">← Back to Clubhouse</a>
+    </div>
+  </div>
+</body>
+</html>

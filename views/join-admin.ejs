@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container" style="max-width: 460px;">
+    <header class="app-header">
+      <h1>Become an Admin 🔑</h1>
+      <p>Gain moderation powers to delete posts</p>
+    </header>
+
+    <div class="form-card">
+      <% if (error) { %>
+        <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; padding: 12px 16px; border-radius: 10px; margin-bottom: 20px; font-size: 0.9rem; text-align: center;">
+          <%= error %>
+        </div>
+      <% } %>
+
+      <form action="/join-admin" method="POST">
+        <div class="form-group">
+          <label for="passcode">Admin Passcode</label>
+          <input type="password" id="passcode" name="passcode" placeholder="Hint: adminpasscode" required>
+        </div>
+
+        <button type="submit" class="btn-primary">Grant Admin Access</button>
+      </form>
+    </div>
+
+    <div style="text-align: center; margin-top: 24px;">
+      <a href="/" class="btn-link">← Back to Clubhouse</a>
+    </div>
+  </div>
+</body>
+</html>
