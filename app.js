@@ -13,10 +13,14 @@ const db = require("./db/queries");
 
 const app = express();
 
+// View engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
+// Middleware setup
 app.use(express.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, "public"))); // Serve static files (CSS, images)
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "cats",
@@ -27,6 +31,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Set local variables for templates
 app.use((req, res, next) => {
   res.locals.currentUser = req.user;
   next();
@@ -66,8 +71,6 @@ app.use((err, req, res, next) => {
   res.status(500).send("Something went wrong!");
 });
 
+// Server listener
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
-
-// Serve static files from /public
-app.use(express.static(path.join(__dirname, "public")));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
